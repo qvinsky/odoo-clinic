@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+        <menuitem
+            id="clinic_payment_menu"
+            name="Payment"
+            action="account.action_invoice_tree"
+            parent="transaction_submenu"
+            sequence="30"/>
+    </data>
+</odoo>

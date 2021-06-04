@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <template id="report_assets_common">
+        <link href="/v11_sample_kevin/static/src/less/layout_boxed.less" rel="stylesheet" type="text/less" />
+    </template> -->
+    <template id="report_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-if="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id"></t>
+                </t>
+                <t t-if="not o or not 'company_id' in o">
+                    <t t-set="company" t-value="res_company"></t>
+                </t>
+                <div class="header">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
+                                style="max-height: 120px;" />
+                        </div>
+                        <div class="col-xs-8" style="font:15px lucida-console,sans-serif !important;">
+                            <h3><span style="color:#893b74 !important;" t-field="company.partner_id.name" /><br /></h3>
+                            <span t-field="company.partner_id.street" /><br />
+                            <span t-field="company.partner_id.street2" /><br />
+                            <span t-field="company.partner_id.city" /><br />
+                            <span t-field="company.partner_id.country_id" /><br />
+                        </div>
+                    </div>
+                </div>
+                <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})" />
+                <div class="article o_report_layout_clinic">
+                    <h2 class="text-right"><strong>
+                            <span t-if="o.state == 'open' or o.state == 'paid'">Invoice</span>
+                            <span t-if="o.state == 'draft'">Draft Invoice</span></strong>
+                        <td></td>
+                    </h2>
+                    <div class="text-right">
+                        <span t-field="company.partner_id.vat" /><br />
+                        <span t-field="company.company_registry" /><br />
+                    </div>
+                    <div class="mt32 mb32" style="padding-top:20px;">
+                        <div class="col-xs-4">
+                            Customer name:
+                            <span t-field="o.partner_id.name" /><br />
+                            <span t-field="o.partner_id.street" /><br />
+                        </div>
+                        <div class="text-right">
+                            <strong>Invoice Number:</strong>
+                            <span t-field="o.number_invoice" />
+                        </div>
+                        <div class="text-right" t-if="o.date_invoice">
+                            <strong>Date:</strong>
+                            <span t-field="o.date_invoice" />
+                        </div>
+                    </div>
+
+                    <!-- <t t-raw="0" /> -->
+                    <table class="table table-condensed" name="invoice_line_table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-right">Quantity</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="invoice_tbody">
+                            <tr t-foreach="o.invoice_line_ids" t-as="l" class="border">
+                                <td><span t-field="l.product_id" /></td>
+                                <td class="text-right">
+                                    <span t-field="l.quantity" t-options='{"widget": "float", "precision": 0}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_unit" t-options='{"widget": "float", "precision": 2}' />
+                                </td>
+                                <td class="text-right" id="subtotal">
+                                    <t t-set="price_sub" t-value="l.quantity * l.price_unit" />
+                                    <t t-esc="price_sub" t-options='{"widget": "float", "precision": 2}' />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="total" class="row">
+                        <div class="col-xs-4 pull-right">
+                            <table class="table table-codensed border">
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td class="text-right">
+                                        <t t-set="total"
+                                            t-value="sum(line.price_subtotal for line in o.invoice_line_ids)" />
+                                        <t t-esc="total" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

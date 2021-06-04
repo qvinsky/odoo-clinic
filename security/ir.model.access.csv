@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_clinic_poly_all,clinic_poly all,model_clinic_poly,,1,1,1,1
+access_clinic_register_all,clinic_register all,model_clinic_register,,1,1,1,1
+access_clinic_checkup_all,clinic_checkup all,model_clinic_checkup,,1,1,1,1
+access_clinic_prescription_all,clinic_prescription all,model_clinic_prescription,,1,1,1,1

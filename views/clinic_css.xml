@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <template id="layout_clinic" name="clinic assets" inherit_id="web.report_assets_common">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/v11_sample_kevin/static/src/less/layout_clinic.less" type="text/less"/>
+            </xpath>
+        </template>
+
+</odoo>

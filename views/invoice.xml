@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_invoice_line_form" model="ir.ui.view">
+      <field name="name">account.invoice.line.form</field>
+      <field name="model">account.invoice.line</field>
+      <field name="arch" type="xml">
+          <form string="Invoice Line">
+              <group>
+                  <group>
+                      <field name="product_id"
+                            context="parent and {'partner_id': parent.partner_id}"/>
+                      <label for="quantity"/>
+                      <div>
+                          <field name="quantity" class="oe_inline"/>
+                          <field name="uom_id" class="oe_inline" groups="product.group_uom"/>
+                      </div>
+                      <field name="price_unit"/>
+                      <field name="currency_id" invisible="1"/>
+                  </group>
+              </group>
+              <label for="name"/>
+              <field name="name"/>
+          </form>
+      </field>
+  </record>
+
+  <record id="clinic_invoice_form_view" model="ir.ui.view">
+    <field name="name">clinic.invoice.form.view</field>
+    <field name="model">clinic.invoice</field>
+    <field name="arch" type="xml">
+      <form string="Invoice">
+        <header>
+          <button name="action_invoice_open" type="object" states="draft" string="Validate"
+            class="oe_highlight o_invoice_validate" modifiers="{'invisible':[['state','not in',['draft']]]}"
+            options="{}" />
+          <button name="action_invoice_draft" states="cancel" string="Reset to Draft" type="object"
+            modifiers="{'invisible':[['state','not in',['cancel']]]}" options="{}" />
+          <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,paid" on_change="1"
+            modifiers="{'readonly':true}" />
+        </header>
+        <sheet string="Invoice">
+          <div class="oe_button_box" name="button_box" />
+          <h1>
+            <div>
+              <field name="number_invoice" readonly="1" class="oe_inline"
+                attrs="{'invisible': [('state','in',('draft',))]}"
+                modifiers="{'invisible':[['state','in',['draft']]],'readonly':true}" />
+            </div>
+          </h1>
+          <group>
+            <group>
+              <field string="Customer" name="partner_id"
+                context="{ 'show_address': 1}"
+                options="{'always_reload': True, 'no_quick_create': True}" domain="[('customer', '=', True)]"
+                on_change="1" can_create="true" can_write="true"
+                modifiers="{'readonly':[['state','not in',['draft']]],'required':true}" />
+            </group>
+            <group>
+              <field name="date_invoice" on_change="1" modifiers="{'readonly':[['state','not in',['draft']]]}" />
+              <field name="date_due" attrs="{'readonly': ['|', ('state', 'in', ['open', 'paid'])]}" force_save="1"
+                modifiers="{'readonly':['|',['state','in',['open','paid']]]}" />
+              <field name="user_id" can_create="true" can_write="true"
+                modifiers="{'readonly':[['state','not in',['draft']]]}" />
+            </group>
+          </group>
+          <field name="sent" invisible="1" modifiers="{'invisible':true,'readonly':true}" />
+          <notebook>
+            <page string="Invoice Lines">
+              <field name="invoice_line_ids" nolabel="1" widget="one2many_list" mode="tree" context="{}" on_change="1"
+                modifiers="{'readonly':[['state','not in',['draft']]]}">
+                <tree string="Invoice Lines" editable="bottom">
+                  <field name="sequence" widget="handle" />
+                  <field name="product_id" />
+                  <field name="name" />
+                  <field name="quantity" />
+                  <field name="price_unit" />
+                  <field name="price_subtotal" />
+                </tree>
+              </field>
+              <group class="oe_subtotal_footer oe_right">
+                <field name="amount_total" class="oe_subtotal_footer_separator"/>
+              </group>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="clinic_invoice_tree_view" model="ir.ui.view">
+    <field name="name">clinic.invoice.tree.view</field>
+    <field name="model">clinic.invoice</field>
+    <field name="arch" type="xml">
+      <tree decoration-info="state == 'draft'" string="Invoice">
+        <field name="number_invoice" modifiers="{'readonly':true}" />
+        <field name="partner_id" string="Patient" on_change="1" can_create="true" can_write="true"
+          modifiers="{'readonly':[['state','not in',['draft']]],'required':true}" />
+        <field name="date_invoice" string="Bill Date" on_change="1"
+          modifiers="{'readonly':[['state','not in',['draft']]]}" />
+        <field name="date_due" modifiers="{'readonly':[['state','not in',['draft']]]}" />
+        <field name="amount_total" string="Total" modifiers="{'readonly':true}" />
+        <field name="state" on_change="1" modifiers="{'readonly':true}" />
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_clinic_invoice_search" model="ir.ui.view">
+    <field name="name">view.clinic.invoice.search</field>
+    <field name="model">clinic.invoice</field>
+    <field name="arch" type="xml">
+      <search string="Search Invoice">
+        <field name="number_invoice" />
+        <field name="partner_id" />
+        <field name="state"></field>
+        <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
+        <filter string="Paid" name="paid" domain="[('state','=','paid')]" />
+      </search>
+    </field>
+  </record>
+
+  <record id="clinic_invoice_action" model="ir.actions.act_window">
+    <field name="name">Customer Invoices</field>
+    <field name="res_model">clinic.invoice</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{}</field>
+    <field name="domain">[]</field>
+  </record>
+
+  <record id="clinic_invoice_action_tree" model="ir.actions.act_window.view">
+    <field eval="1" name="sequence" />
+    <field name="view_mode">tree</field>
+    <field name="view_id" ref="clinic_invoice_tree_view" />
+    <field name="act_window_id" ref="clinic_invoice_action" />
+  </record>
+
+  <record id="clinic_invoice_action_form" model="ir.actions.act_window.view">
+    <field eval="2" name="sequence" />
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="clinic_invoice_form_view" />
+    <field name="act_window_id" ref="clinic_invoice_action" />
+  </record>
+
+
+  <menuitem id="clinic_invoice_menu" action="clinic_invoice_action" parent="transaction_submenu" sequence="40" />
+  <data>
+  </data>
+
+
+</odoo>

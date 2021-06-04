@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+    
+        <record id="view_clinic_reason_cancel_wizard" model="ir.ui.view">
+            <field name="name">Reason Cancel</field>
+            <field name="model">clinic.reason.cancel.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Reason Cancel">
+
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <footer>
+                            <button name="action_cancel" string="Cancel" type="object" class="oe_highlight"/>
+                            <label string="or"/>
+                            <button string="No Cancel" class="oe_link" special="cancel"/>
+                        </footer>
+                </form>
+            </field>
+        </record>
+    
+    </data>
+    
+
+</odoo>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="clinic_checkup_tree_view" model="ir.ui.view">
+        <field name="name">clinic.checkup.tree.view</field>
+        <field name="model">clinic.checkup</field>
+        <field name="arch" type="xml">
+            <tree string="Checkup" decoration-info="state == 'draft'">
+                <field name="name" />
+                <field name="register_id" />
+                <field name="patient_id" />
+                <field name="gender" />
+                <field name="age" />
+                <field name="poly_id" />
+                <field name="doctor_id" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_clinic_checkup_search" model="ir.ui.view">
+        <field name="name">view.clinic.checkup.search</field>
+        <field name="model">clinic.checkup</field>
+        <field name="arch" type="xml">
+            <search string="Search Checkup">
+                <field name="name" />
+                <field name="register_id" />
+                <field name="patient_id" />
+                <field name="gender" />
+                <field name="age" />
+                <field name="poly_id" />
+                <field name="doctor_id" />
+                <field name="state" />
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
+                <filter string="confirm" name="confirm" domain="[('state', '=','confirm')]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_patient" string="Patient" domain="[]" context="{'group_by':'patient_id'}" />
+                    <filter name="group_gender" string="Gender" domain="[]" context="{'group_by':'gender'}" />
+                    <filter name="group_poly" string="Poly" domain="[]" context="{'group_by':'poly_id'}" />
+                    <filter name="group_doctor" string="Doctor" domain="[]" context="{'group_by':'doctor_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="clinic_checkup_form_view">
+        <field name="name">clinic.checkup.form.view</field>
+        <field name="model">clinic.checkup</field>
+        <field name="arch" type="xml">
+            <form string="Checkup">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state','!=','draft')]}" />
+                    <button name="action_cancel" string="Cancel" type="object"
+                        attrs="{'invisible': [('state','=','cancel')]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="oe_inline" readonly="1" />
+                        </h1>
+                    </div>
+                    <group col="4">
+                        <field name="register_id" domain="[('name','=','/')]"
+                            attrs="{'readonly': [('state','!=','draft')]}" required="1" context="{ 'show_address': 1}"
+                            options="{'always_reload': True}" can_write="true" /> <!--domain="[('state','in',['confirm'])]"-->
+                        <field name="date" invisible="1"/>
+                    </group>
+                    <group col="4" attrs="{'invisible': [('register_id','=', False)]}">
+                        <field name="patient_id" readonly="1"/> 
+                        <field name="poly_id" readonly="1"/> 
+                        <field name="gender" readonly="1"/>
+                        <field name="date" readonly="1"/>
+                        <field name="age" readonly="1"/>                        
+                        <field name="date" invisible="1"/>
+                        <field name="doctor_id" required="1" can_write="False"/> <!-- attrs="{'readonly': [('state','!=','draft')]}" options="{'no_open': True, 'no_create': True}" -->
+                        <field name="complain" attrs="{'readonly': [('state','!=','draft')]}" required="1" />
+                        <field name="checkup_result" attrs="{'readonly': [('state','!=','draft')]}" required="1" />
+                        <field name="medication" attrs="{'readonly': [('state','!=','draft')]}" required="1" />
+                    </group>
+                    <notebook>
+                        <page string="Prescription">
+                            <field name="prescription" attrs="{'readonly': [('state','!=','draft')]}">
+                                <tree string="Prescription" editable="bottom">
+                                    <field name="product_id" options="{'no_open': True, 'no_create': True}" />
+                                    <field name="medication_use" />
+                                    <field name="medication_time" />
+                                    <field name="qty" />
+                                    <!-- <field name="unit_id" options="{'no_open': True, 'no_create': True}" /> -->
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="clinic_checkup_action">
+        <field name="name">Checkup</field>
+        <field name="res_model">clinic.checkup</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record id="clinic_checkup_action_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence" />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="clinic_checkup_tree_view" />
+        <field name="act_window_id" ref="clinic_checkup_action" />
+    </record>
+
+    <record id="clinic_checkup_action_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence" />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="clinic_checkup_form_view" />
+        <field name="act_window_id" ref="clinic_checkup_action" />
+    </record>
+
+    <menuitem 
+        id = "clinic_checkup_menu"
+        action = "clinic_checkup_action"
+        parent = "transaction_submenu"
+        sequence = "20" />
+
+</odoo>

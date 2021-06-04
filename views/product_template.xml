@@ -1,0 +1,7 @@
+<odoo>
+    <data>
+        
+        <menuitem action="product.product_template_action" id="clinic_medicine_menu" name="Medicine" parent="data_master_submenu" sequence="40"/>
+        
+    </data>
+</odoo>

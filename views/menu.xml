@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+    	
+    	<menuitem id="topmenu" name="Clinic" sequence="400"/>
+    	<menuitem id="data_master_submenu" parent="topmenu" name="Data Master" sequence="20"/>
+        <menuitem id="transaction_submenu" parent="topmenu" name="Transaction" sequence="10"/>
+		
+	</data>
+</odoo>
